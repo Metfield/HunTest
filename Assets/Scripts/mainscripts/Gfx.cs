@@ -152,32 +152,27 @@ public class Gfx : MonoBehaviour
 
 
 
-	public void SetPosX(GameObject g, float inX){
-
+	public void SetPosX(GameObject g, float inX)
+    {
 		Vector3 v = g.transform.localPosition;
 		v.x = inX;
 		g.transform.localPosition = v;
-
 	}
 
 
 
-	public void SetPosY(GameObject g, float inY){
-
+	public void SetPosY(GameObject g, float inY)
+    {
 		Vector3 v = g.transform.localPosition;
 		v.y = -inY;
 		g.transform.localPosition = v;
-
 	}
 
-
-
-    public void SetDirX(GameObject g, int inDir) {
-
+    public void SetDirX(GameObject g, int inDir)
+    {
         Vector3 v = g.transform.localScale;
         v.x = Mathf.Abs(v.x)*inDir;
         g.transform.localScale = v;
-
     }
 
 

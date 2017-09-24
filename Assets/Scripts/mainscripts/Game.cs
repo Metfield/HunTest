@@ -1,8 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class Game : MonoBehaviour {
-
+public class Game : MonoBehaviour
+{
     Main main;
     int myRes;
     Gfx gfx;
@@ -27,10 +27,8 @@ public class Game : MonoBehaviour {
     List<GeneralObject> gameObjects;
     int gameObjectLength;
 
-
-
-    public void Init(Main inMain) {
-
+    public void Init(Main inMain)
+    {
         main  = inMain;
         gfx   = main.gfx;
         myRes = gfx.myRes;
@@ -42,21 +40,18 @@ public class Game : MonoBehaviour {
         gameObjects = new List<GeneralObject>();
         gameObjectLength = 0;
 
-        player = new Player(main);
+        player = new Player(main, true);
 
         AddLevelObject(new Enemy(main, 530, 560));
         AddLevelObject(new Enemy(main, 516, 624));
 
         gameStatus  = PLAY;
-
     }
 
-    
-
-    void Update() {
-       
-        if (gameStatus==PLAY) {
-
+    void Update()
+    {
+        if (gameStatus==PLAY)
+        {
             GoKeys();
 
             GoPlayer();
@@ -64,23 +59,16 @@ public class Game : MonoBehaviour {
             GoCam();
 
             GoObjects();
-
         } 
-
     }
 
-
-
-    void GoPlayer() {
-
+    void GoPlayer()
+    {
         player.FrameEvent(playerHorizontal, playerVertical, playerShoot);
-
     }
 
-
-
-    private void GoKeys() {
-       
+    private void GoKeys()
+    {
         // ---------------------------------------------------------------
         // NORMAL KEYBOARD
 		// ---------------------------------------------------------------
@@ -124,42 +112,31 @@ public class Game : MonoBehaviour {
             }
         }
     }
-
-
     
-    void GoCam() {
-
+    void GoCam()
+    {
         camX = 480 - camWidth/2;
         camY = 600 - camHeight/2;
 
         gfx.MoveLevel(camX, camY);
-       
     }
-    
 
-
-    public void AddLevelObject(GeneralObject inObj) {
-
+    public void AddLevelObject(GeneralObject inObj)
+    {
         gameObjects.Add(inObj);
         gameObjectLength++;
-
     }
 
-
-
-    void GoObjects(bool inDoActive=true) {
-
-        for (int i = 0; i<gameObjectLength; i++) {
-
-            if (!gameObjects[i].FrameEvent()) {
+    void GoObjects(bool inDoActive=true)
+    {
+        for (int i = 0; i<gameObjectLength; i++)
+        {
+            if (!gameObjects[i].FrameEvent())
+            {
                 gameObjects.RemoveAt(i);
                 i--;
                 gameObjectLength--;
             }
         }
-
     }
-
-
-
 }
