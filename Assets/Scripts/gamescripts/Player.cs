@@ -1,30 +1,33 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public abstract class SpriteCharacter
 {
+    protected Main main;
+    protected Game game;
+    protected Gfx gfx;
+    protected Snd snd;
+
+    protected Animator animator;
+
     protected SpriteRenderer spriteRenderer;
+    protected GameObject gameObject;
 
     public abstract void UpdatePos();
+    public abstract void Shoot();
     public abstract void Kill();
-    public abstract void Turn();
+    public abstract void Turn(int direction);
+    public abstract void Jump();
+    public abstract void Duck();
+    public abstract void StandStill();
 
-    public virtual bool FrameEvent() { return false; }
-    public virtual bool FrameEvent(int inMoveX, int inMoveY, bool inShoot) { return false; }
+    public virtual void FrameEvent() {  }
+    public virtual void FrameEvent(int inMoveX, int inMoveY, bool inShoot) { }
 }
 
 public class Player : SpriteCharacter
 {
-    Main main;
-    Game game;
-    Gfx  gfx;
-    Snd  snd;
-
-    Sprite[] sprites;
-
-    GameObject gameObject;
     Vector3 playerPosition;
-
-    
 
     float x, previousDx;
     float y;
@@ -36,7 +39,7 @@ public class Player : SpriteCharacter
         gfx  = main.gfx;
         snd  = main.snd;
 
-        sprites = gfx.GetLevelSprites("Players/Player1");
+        //Sprite[] sprites = gfx.GetLevelSprites("Players/Player1");
 
         x = 370;
         y = 624;
@@ -53,60 +56,62 @@ public class Player : SpriteCharacter
 
         playerPosition = gameObject.transform.localPosition;
 
-        if (startFacingRight)
-            previousDx = 1;
-        else
-            previousDx = -1;
-
+        // Get key components
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+        animator = gameObject.GetComponent<Animator>();
     }
 
-    public void FrameEvent(int inMoveX, int inMoveY, bool inShoot)
+    public override void FrameEvent(int inMoveX, int inMoveY, bool inShoot)
     {
-        // Player logic here
-
-
-        // temp logic :)
-        //------------------------------------------------------------
-
-        
-
-        // Flip sprite accordingly
-        if (previousDx != inMoveX)
-
-
-        x = x + inMoveX;
-        previousDx = inMoveX;
-
+        // Check if player is walking
+        if (inMoveX == 0)
+        {
+            StandStill();
+        }
+        else
+        {
+            Walk(inMoveX);           
+        }
 
         if (inMoveY == -1)
             Jump();
 
         if (inMoveY == 1)
             Duck();
-        //------------------------------------------------------------
-
-
 
         UpdatePos();
 
-        if (inShoot) {
-            snd.PlayAudioClip("Gun");
+        if (inShoot)
+        {
+            Shoot();
         }
-
     }
 
-    void Jump()
+    private void Walk(int dx)
+    {
+        // Flip sprite accordingly
+        if (previousDx != dx)
+            Turn(dx);
+
+        // Update variables
+        x = x + dx;
+        previousDx = dx;
+
+        // Play walk animation
+        animator.SetBool("Walk", true);
+    }
+
+    public override void Jump()
     {
         main.Trace("Player::Jump!");
     }
 
-    void Duck()
+    public override void Duck()
     {
         main.Trace("Player::Duck!"); 
     }
 
-    protected override void UpdatePos()
+    public override void UpdatePos()
     {
         playerPosition.x = x;
         playerPosition.y = -y;
@@ -114,11 +119,31 @@ public class Player : SpriteCharacter
         gameObject.transform.localPosition = playerPosition;
     }
 
-   
+    public override void Kill()
+    {
+        
+    }
 
+    public override void StandStill()
+    {
+        animator.SetBool("Duck", false);
+        animator.SetBool("Walk", false);
+    }
 
+    public override void Turn(int direction)
+    {
+        if (previousDx > direction)
+            spriteRenderer.flipX = true;
+        else
+            spriteRenderer.flipX = false;
+    }
 
+    public override void Shoot()
+    {
+        // Play animation
+        animator.SetTrigger("Shoot");
 
-
-
+        // Play sound
+        snd.PlayAudioClip("Gun");
+    }
 }
