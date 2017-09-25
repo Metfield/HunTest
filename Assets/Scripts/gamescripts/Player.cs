@@ -48,6 +48,7 @@ public class Player : SpriteCharacter
     Vector3 colliderExtents;
 
     GameObject projectileOrigin;
+    GameObject walkingGun;
 
     public Player (Main inMain)
     {
@@ -88,9 +89,12 @@ public class Player : SpriteCharacter
         horizontalExtents = new Vector3(colliderExtents.x, 0, 0);
         heightOffset = new Vector3(0.0f, -0.01f);
 
-        // Get projectile origin
-        // TODO: Handle multiple children
-        projectileOrigin = gameObject.transform.GetChild(0).gameObject;
+        // Get projectile origin        
+        projectileOrigin = gameObject.transform.Find("BulletOrigin").gameObject;
+
+        // Get walking gun
+        walkingGun = gameObject.transform.Find("WalkingGun").gameObject;
+        walkingGun.SetActive(false);
        
         // Set initial position in map
         UpdatePos();
@@ -99,6 +103,9 @@ public class Player : SpriteCharacter
     public override void FrameEvent(int inMoveX, int inMoveY, bool inShoot)
     {
         CheckPlayerIsGrounded();
+
+        if (inMoveX == 0)
+            walkingGun.SetActive(false);
 
         if (isGrounded)
             GameObject.Find("Blah").GetComponent<SpriteRenderer>().enabled = true;
@@ -139,9 +146,7 @@ public class Player : SpriteCharacter
             animator.SetBool("Jump", true);
 
         if (inShoot)
-        {
             Shoot();
-        }
     }
 
     private void CheckPlayerIsGrounded()
@@ -242,14 +247,55 @@ public class Player : SpriteCharacter
         snd.PlayAudioClip("Gun");
 
         //Spawn projectile
-        
         Vector3 origin = projectileOrigin.transform.position;
 
         if (previousDx < 0)
             // TODO: Find nicer way... get localToWorld coordinates somehow
             origin -= new Vector3(projectileOrigin.transform.localPosition.x * 6, 0, 0);
 
+        // Fire!!
         gfx.FireProjectile(origin, previousDx);
+
+        // Spawn extra gun if player is walking'n'shootin'
+        if (isGrounded)
+        {
+            if (PlayerIsMovingHorizontally())
+            {
+                UpdateWalkingGun();
+                walkingGun.SetActive(true);
+            }
+            else
+            {
+                walkingGun.SetActive(false);
+            }
+        }
+    }
+
+    bool PlayerIsMovingHorizontally()
+    {
+        return rigidBody.velocity.x != 0;
+    }
+
+    void UpdateWalkingGun()
+    {
+        // Update position and mirroring accordingly
+        // only if player changed orientation
+        if (previousDx > 0)
+        {
+            if (walkingGun.transform.localPosition.x < 0)
+            {
+                walkingGun.transform.localPosition -= new Vector3(walkingGun.transform.localPosition.x * 2, 0, 0);
+                walkingGun.GetComponent<SpriteRenderer>().flipX = false;
+            }
+        }
+        else if (previousDx < 0)
+        {
+            if (walkingGun.transform.localPosition.x > 0)
+            {
+                walkingGun.transform.localPosition -= new Vector3(walkingGun.transform.localPosition.x * 2, 0, 0);
+                walkingGun.GetComponent<SpriteRenderer>().flipX = true;
+            }
+        }
     }
 
     public override void StandUp()
