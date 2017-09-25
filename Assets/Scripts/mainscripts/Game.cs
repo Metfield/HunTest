@@ -40,7 +40,7 @@ public class Game : MonoBehaviour
         gameObjects = new List<GeneralObject>();
         gameObjectLength = 0;
 
-        player = new Player(main, true);
+        player = new Player(main);
 
         AddLevelObject(new Enemy(main, 530, 560));
         AddLevelObject(new Enemy(main, 516, 624));

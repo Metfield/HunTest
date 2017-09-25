@@ -5,8 +5,8 @@ using System.Collections;
 
 public class Gfx : MonoBehaviour
 {
-	Main main;
-	public int myRes;
+    Main main;
+    public int myRes;
 
     public int screenWidth;
     public int screenHeight;
@@ -27,75 +27,67 @@ public class Gfx : MonoBehaviour
 
     Dictionary<string, Sprite[]> levelSprites;
 
-    public void Init(Main inMain) {
-
+    public void Init(Main inMain)
+    {
         main = inMain;
 
         // --------------------------------------------------------------------------------
         // Setup Screen Resolution
         // --------------------------------------------------------------------------------
 
-        screenWidth  = main.screenWidth;
-		screenHeight = main.screenHeight;
-		resetVector  = new Vector3(1.0f, 1.0f, 1.0f);
-		myRes        = Mathf.CeilToInt(screenHeight / 267F);
-        
-        int tMyRes = Mathf.CeilToInt (screenWidth / 440F);
-		if (tMyRes > myRes){myRes = tMyRes;}
+        screenWidth = main.screenWidth;
+        screenHeight = main.screenHeight;
+        resetVector = new Vector3(1.0f, 1.0f, 1.0f);
+        myRes = Mathf.CeilToInt(screenHeight / 267F);
 
-        myResVector  = new Vector3(myRes, myRes, 1.0f);
+        int tMyRes = Mathf.CeilToInt(screenWidth / 440F);
+        if (tMyRes > myRes) { myRes = tMyRes; }
+
+        myResVector = new Vector3(myRes, myRes, 1.0f);
 
         // --------------------------------------------------------------------------------
         // Setup Camera
         // --------------------------------------------------------------------------------
 
         cam = main.cam;
-		cam.pixelRect = new Rect(0, 0, screenWidth, screenHeight);
-		cam.orthographicSize = screenHeight / 2;
-		cam.transform.position = new Vector3(screenWidth / 2, -screenHeight / 2, -10f);
+        cam.pixelRect = new Rect(0, 0, screenWidth, screenHeight);
+        cam.orthographicSize = screenHeight / 2;
+        cam.transform.position = new Vector3(screenWidth / 2, -screenHeight / 2, -10f);
 
         // --------------------------------------------------------------------------------
         // Setup Level
         // --------------------------------------------------------------------------------
 
-        level = new GameObject("Level");
-		level.transform.localScale = myResVector;
+        level = GameObject.Instantiate(GameObject.Find("Level"));
+        level.transform.localScale = myResVector;
         level.transform.position = new Vector3(0, 0, 1);
         levelPos = level.transform.position;
 
         levelSprites = new Dictionary<string, Sprite[]>();
 
-        MakeGameObject("Level1", Resources.Load<Sprite>("Level/Level"),0,0,"Level");
+        MakeGameObject("Level1", Resources.Load<Sprite>("Level/Level"), 0, 0, "Level");
 
-        background = MakeGameObject("Background", Resources.Load<Sprite>("Level/Background"),screenWidth/2/myRes, screenHeight/2/myRes,"Background");
+        background = MakeGameObject("Background", Resources.Load<Sprite>("Level/Background"), screenWidth / 2 / myRes, screenHeight / 2 / myRes, "Background");
         SetParent(background, null);
-
     }
 
-
-
-    public Sprite[] GetLevelSprites(string inName) {
-
-        if (!levelSprites.ContainsKey(inName)) {
+    public Sprite[] GetLevelSprites(string inName)
+    {
+        if (!levelSprites.ContainsKey(inName))
+        {
             levelSprites.Add(inName, Resources.LoadAll<Sprite>(inName));
         }
 
         return levelSprites[inName];
-
     }
 
-
-
-    public void MoveLevel(float inX, float inY) {
-
-        SetPos(level, -inX*myRes, -inY*myRes);
-
+    public void MoveLevel(float inX, float inY)
+    {
+        SetPos(level, -inX * myRes, -inY * myRes);
     }
 
-
-
-    public GameObject MakeGameObject(string inName, Sprite inSprite, float inX = 0, float inY = 0, string inLayerName="GameObjects") {
-
+    public GameObject MakeGameObject(string inName, Sprite inSprite, float inX = 0, float inY = 0, string inLayerName = "GameObjects")
+    {
         GameObject o = new GameObject(inName);
         SpriteRenderer sr = o.AddComponent<SpriteRenderer>();
         sr.sprite = inSprite;
@@ -105,52 +97,37 @@ public class Gfx : MonoBehaviour
         Vector3 tPos = o.transform.localPosition;
         tPos.x = inX; tPos.y = -inY;
         o.transform.localPosition = tPos;
-      
+
         return o;
-
     }
 
-
-
-    public void SetParent(GameObject g, Transform inParent) {
-
+    public void SetParent(GameObject g, Transform inParent)
+    {
         g.transform.parent = inParent;
-
     }
 
-
-
-	public void SetScale(GameObject g, float inX, float inY){
-
+	public void SetScale(GameObject g, float inX, float inY)
+    {
 		Vector3 v = g.transform.localScale;
 		v.x = inX;
 		v.y = inY;
 		g.transform.localScale = v;
-
 	}
 
-
-
-	public void SetScaleX(GameObject g, float inX){
-
+	public void SetScaleX(GameObject g, float inX)
+    {
 		Vector3 v = g.transform.localScale;
 		v.x = inX;
 		g.transform.localScale = v;
-
 	}
 
-
-
-	public void SetPos(GameObject g, float inX, float inY){
-
+	public void SetPos(GameObject g, float inX, float inY)
+    {
 		Vector3 v = g.transform.localPosition;
 		v.x = inX;
 		v.y = -inY;
 		g.transform.localPosition = v;
-
 	}
-
-
 
 	public void SetPosX(GameObject g, float inX)
     {
@@ -158,8 +135,6 @@ public class Gfx : MonoBehaviour
 		v.x = inX;
 		g.transform.localPosition = v;
 	}
-
-
 
 	public void SetPosY(GameObject g, float inY)
     {
@@ -175,13 +150,8 @@ public class Gfx : MonoBehaviour
         g.transform.localScale = v;
     }
 
-
-
-	public void SetSprite(GameObject g, Sprite s){
-
+	public void SetSprite(GameObject g, Sprite s)
+    {
 		g.GetComponent<SpriteRenderer> ().sprite = s;
-
 	}
-
-
 }

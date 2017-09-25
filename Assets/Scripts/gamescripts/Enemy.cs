@@ -10,16 +10,12 @@ public class Enemy : GeneralObject
 
         sprites = gfx.GetLevelSprites("Enemies/Enemy3_2");
 
-        if (!(gameObject = GameObject.Instantiate(GameObject.Find("Enemy"))))
-        {
-            main.Trace("Enemy constructor error. Make sure an Enemy is in the scene already");
-            return;
-        }
-
+        gameObject = GameObject.Instantiate(GameObject.Find("Enemy"));        
         gameObject.transform.parent = gfx.level.transform;
         gameObject.transform.position = new Vector3(x, -y, 1);
 
-        //gameObject = gfx.MakeGameObject("Enemy", sprites[22], x, y);
+        // Get sprite renderer
+        // Set sorting layer to GameObjects
 
         SetDirection(-1);
     }
