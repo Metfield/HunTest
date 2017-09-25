@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public abstract class SpriteCharacter
@@ -46,6 +47,8 @@ public class Player : SpriteCharacter
     float physicsCompensationMultiplier = 4000;
     Vector3 colliderExtents;
 
+    GameObject projectileOrigin;
+
     public Player (Main inMain)
     {
         main = inMain;
@@ -59,6 +62,9 @@ public class Player : SpriteCharacter
         y = 624;
         movementSpeed = 3.0f;
 
+        // Assuming we are starting facing right
+        previousDx = 1;
+
         // We're using the Unity engine, let's use prefabs :D
         gameObject = GameObject.Instantiate(GameObject.Find("Player"));
         gameObject.transform.parent = gfx.level.transform;
@@ -71,6 +77,9 @@ public class Player : SpriteCharacter
         animator = gameObject.GetComponent<Animator>();
         rigidBody = gameObject.GetComponent<Rigidbody2D>();
 
+        // Enable renderer
+        spriteRenderer.enabled = true;
+
         // Get distance from collider to bottom
         colliderExtents = gameObject.GetComponent<BoxCollider2D>().bounds.extents;
 
@@ -79,6 +88,10 @@ public class Player : SpriteCharacter
         horizontalExtents = new Vector3(colliderExtents.x, 0, 0);
         heightOffset = new Vector3(0.0f, -0.01f);
 
+        // Get projectile origin
+        // TODO: Handle multiple children
+        projectileOrigin = gameObject.transform.GetChild(0).gameObject;
+       
         // Set initial position in map
         UpdatePos();
     }
@@ -92,18 +105,23 @@ public class Player : SpriteCharacter
         else
             GameObject.Find("Blah").GetComponent<SpriteRenderer>().enabled = false;
 
-        if (inMoveY == -1 && isGrounded)
-            Jump();
-        else if (inMoveY == 1)
+        if (isGrounded)
         {
-            isCrouching = true;
-            StandStill();
-            Duck();
-        }
-        else
-        {
-            StandUp();
-            isCrouching = false;
+            if (inMoveY == -1)
+            { 
+                Jump();
+            }
+            else if (inMoveY == 1)
+            {
+                isCrouching = true;
+                StandStill();
+                Duck();
+            }
+            else
+            {
+                StandUp();
+                isCrouching = false;
+            }
         }
 
         // Check if player is walking
@@ -116,6 +134,9 @@ public class Player : SpriteCharacter
             if(!isCrouching)
                 Walk(inMoveX);           
         }
+
+        if(!isGrounded)
+            animator.SetBool("Jump", true);
 
         if (inShoot)
         {
@@ -141,26 +162,38 @@ public class Player : SpriteCharacter
         previousDx = dx;
 
         // Add force to player
-        rigidBody.AddForce(new Vector2(dx * movementSpeed * (isGrounded ? physicsCompensationMultiplier : 1), 0), ForceMode2D.Impulse);
+        rigidBody.AddForce(new Vector2(dx * movementSpeed * (isGrounded ? physicsCompensationMultiplier : physicsCompensationMultiplier / 2), 0), ForceMode2D.Impulse);
 
         // Play walk animation
-        animator.SetBool("Walk", true);        
+        if (isGrounded)
+        {
+            animator.SetBool("Walk", true);
+            animator.SetBool("Jump", false);
+        }
     }
+
+    bool jumpCooldown = false;
+    float jumpStartTime;
 
     public override void Jump()
     {
-        if (isGrounded)
+        if (!jumpCooldown)
         {
             // Play jump animation
-            animator.SetTrigger("Jump");
-        
+            animator.SetBool("Jump", true);
             main.Trace("Player::Jump!");
-            
-            rigidBody.AddForce(gameObject.transform.up * physicsCompensationMultiplier * 10000);
+            rigidBody.AddForce(gameObject.transform.up * physicsCompensationMultiplier * 100, ForceMode2D.Impulse);
+
+            jumpCooldown = true;
+            jumpStartTime = 0;
         }
         else
         {
-
+            // Wait for 0.2 secs after jump to avoid stupid bouncing
+            if((jumpStartTime += Time.deltaTime) > 0.02f)
+            {
+                jumpCooldown = false;
+            }
         }
     }
 
@@ -185,7 +218,8 @@ public class Player : SpriteCharacter
 
     public override void StandStill()
     {        
-        animator.SetBool("Walk", false);        
+        animator.SetBool("Walk", false);
+        animator.SetBool("Jump", false);
     }
 
     public override void Turn(int direction)
@@ -198,6 +232,9 @@ public class Player : SpriteCharacter
 
     public override void Shoot()
     {
+        if (isCrouching)
+            return;
+
         // Play animation
         animator.SetTrigger("Shoot");
 
@@ -205,6 +242,14 @@ public class Player : SpriteCharacter
         snd.PlayAudioClip("Gun");
 
         //Spawn projectile
+        
+        Vector3 origin = projectileOrigin.transform.position;
+
+        if (previousDx < 0)
+            // TODO: Find nicer way... get localToWorld coordinates somehow
+            origin -= new Vector3(projectileOrigin.transform.localPosition.x * 6, 0, 0);
+
+        gfx.FireProjectile(origin, previousDx);
     }
 
     public override void StandUp()

@@ -15,6 +15,8 @@ public class Enemy : GeneralObject
         gameObject.transform.position = new Vector3(x, -y, 1);
 
         // Get sprite renderer
+        gameObject.GetComponent<SpriteRenderer>().enabled = true;
+
         // Set sorting layer to GameObjects
 
         SetDirection(-1);

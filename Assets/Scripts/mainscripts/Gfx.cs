@@ -27,6 +27,8 @@ public class Gfx : MonoBehaviour
 
     Dictionary<string, Sprite[]> levelSprites;
 
+    ProjectilePool projectilePool;
+
     public void Init(Main inMain)
     {
         main = inMain;
@@ -69,6 +71,9 @@ public class Gfx : MonoBehaviour
 
         background = MakeGameObject("Background", Resources.Load<Sprite>("Level/Background"), screenWidth / 2 / myRes, screenHeight / 2 / myRes, "Background");
         SetParent(background, null);
+
+        // Initialize projectiles
+        StartProjectiles();
     }
 
     public Sprite[] GetLevelSprites(string inName)
@@ -106,7 +111,24 @@ public class Gfx : MonoBehaviour
         g.transform.parent = inParent;
     }
 
-	public void SetScale(GameObject g, float inX, float inY)
+    public void StartProjectiles()
+    {
+        // Create pool of bullets
+        projectilePool = new ProjectilePool(15, main);
+    }
+
+    public ProjectilePool GetProjectilePool()
+    {
+        return projectilePool;
+    }
+
+    public void FireProjectile(Vector2 origin, float direction)
+    {
+        Projectile projectile = projectilePool.GetProjectile();
+        projectile.Fire(origin, direction * 1000);
+    }
+
+    public void SetScale(GameObject g, float inX, float inY)
     {
 		Vector3 v = g.transform.localScale;
 		v.x = inX;
@@ -150,8 +172,8 @@ public class Gfx : MonoBehaviour
         g.transform.localScale = v;
     }
 
-	public void SetSprite(GameObject g, Sprite s)
+    public void SetSprite(GameObject g, Sprite s)
     {
-		g.GetComponent<SpriteRenderer> ().sprite = s;
-	}
+        g.GetComponent<SpriteRenderer>().sprite = s;
+    }
 }

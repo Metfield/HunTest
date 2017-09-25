@@ -45,6 +45,12 @@ public class Game : MonoBehaviour
         AddLevelObject(new Enemy(main, 530, 560));
         AddLevelObject(new Enemy(main, 516, 624));
 
+        // Add projectiles to object list        
+        foreach(Projectile p in gfx.GetProjectilePool().projectiles)
+        {
+            AddLevelObject(p);
+        }
+
         gameStatus  = PLAY;
     }
 

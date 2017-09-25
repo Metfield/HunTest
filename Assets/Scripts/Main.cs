@@ -1,7 +1,7 @@
 using UnityEngine;
 
-public class Main : MonoBehaviour {
-
+public class Main : MonoBehaviour
+{
 	public Game game;
 	public Gfx gfx;
     public Snd snd;
@@ -10,10 +10,9 @@ public class Main : MonoBehaviour {
 
     public int screenWidth;
     public int screenHeight;
-	
 
-    void Start() {
-
+    void Start()
+    {
         screenWidth  = Screen.width;
         screenHeight = Screen.height;
 
@@ -23,7 +22,9 @@ public class Main : MonoBehaviour {
         Cursor.visible = false;
           
         QualitySettings.vSyncCount = 1;
-        if (Screen.currentResolution.refreshRate > 65) {
+
+        if (Screen.currentResolution.refreshRate > 65)
+        {
             QualitySettings.vSyncCount = Mathf.FloorToInt(Screen.currentResolution.refreshRate/60);
         }
         
@@ -32,46 +33,40 @@ public class Main : MonoBehaviour {
         go = new GameObject("Main");
 
         StartGfx();
-        StartSnd();
+        StartSnd();        
 
         StartGame();
-             
     }
 
    
-    public void Trace(string inString) {
-
+    public void Trace(string inString)
+    {
 		Debug.Log ("Trace:"+inString);
-
 	}
 
 
-    void StartGfx() {
-
+    void StartGfx()
+    {
         gfx = go.AddComponent<Gfx>();
         gfx.Init(this);
-
     }
 
-    public void StartSnd() {
-
+    public void StartSnd()
+    {
         snd = go.AddComponent<Snd>();
         snd.Init(this);
-
     }
 
-    public void StartGame() {
-
+    public void StartGame()
+    {
         game = go.AddComponent<Game>();
         game.Init(this);
-
     }
 
-    public void EndGame() {
-
+    public void EndGame()
+    {
         Destroy(go.GetComponent<Game>());
         game = null;
-
     }
 
 
