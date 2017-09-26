@@ -8,6 +8,9 @@ public class Snd : MonoBehaviour
     Main main;
     GameObject snd;
     AudioSource audioSource;
+    AudioSource musicSource;
+
+    List<AudioClip> characterGrunts;
 
     public void Init(Main inMain)
     {
@@ -18,11 +21,34 @@ public class Snd : MonoBehaviour
 		audioClips = new Dictionary<string, AudioClip>();
 		
 		AddAudioClip("Gun", "Audio/Gun");
+
+        musicSource = snd.AddComponent<AudioSource>();
+        musicSource.clip = Resources.Load<AudioClip>("Audio/BGM");
+        musicSource.loop = true;
+        musicSource.volume = 0.6f;
+
+        LoadCharacterGrunts();
     }
 
     public void PlayAudioClip(string inVer)
     {
-        audioSource.PlayOneShot(audioClips[inVer]);
+        if (inVer == "Grunt")
+            audioSource.PlayOneShot(characterGrunts[Random.Range(0, 7)]);
+        else
+            audioSource.PlayOneShot(audioClips[inVer]);
+    }
+
+    public void PlayBGM()
+    {
+        musicSource.Play();
+    }
+
+    private void LoadCharacterGrunts()
+    {
+        characterGrunts = new List<AudioClip>();
+
+        for(int i = 0; i < 8; i++)        
+            characterGrunts.Add(Resources.Load<AudioClip>("Audio/Character/Grunts/pain" + i));
     }
 
     public void AddAudioClip(string inId, string inAddress)

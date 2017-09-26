@@ -60,6 +60,9 @@ public class Game : MonoBehaviour
         }
 
         gameStatus  = PLAY;
+
+        // Start music
+        snd.PlayBGM();
     }
 
     void Update()

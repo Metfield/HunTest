@@ -123,6 +123,7 @@ public abstract class Character : GeneralObject
         }
 
         // Play hit sound
+        snd.PlayAudioClip("Grunt");
 
         // Some blood FX?
 
