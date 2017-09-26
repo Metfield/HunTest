@@ -31,7 +31,7 @@ public class Enemy : Character
 
     private void Init()
     {
-        Turn(-1);
+        direction = 1;        
         patrolVelocity = new Vector3(0, 0, 0);
 
         // Find patrol bounds
@@ -42,9 +42,9 @@ public class Enemy : Character
         rigidBody.isKinematic = true;
 
         // Initialize shooting-related stuff
-        shotsPerBurst = 3;
+        shotsPerBurst = 2;
         burstLengthInSecs = 0.8f;
-        burstStep = burstLengthInSecs / shotsPerBurst;
+        burstStep = 0.5f;
 
         // Start idle
         animator.SetBool("Walk", false);
@@ -77,7 +77,7 @@ public class Enemy : Character
         return isOK;
     }
 
-    public override void OnBeingShot(int hitDirection)
+    public override void OnBeingShot(int hitDirection, Projectile projectile = null)
     {
         // Take damage and maybe get killed
         base.OnBeingShot(hitDirection);
@@ -112,6 +112,10 @@ public class Enemy : Character
 
     void Patrol()
     {
+        // This enemy is standing still
+        if (patrolLeftBound.x == patrolRightBound.x)
+            return;
+
         // Check bounds
         if (gameObject.transform.position.x <= patrolLeftBound.x)
         {
@@ -150,16 +154,10 @@ public class Enemy : Character
         // Plays death animation
         base.Kill(hitDirection);
 
-        // Ugly hack for time's sake
+        // Moved to Character 
+        /*// Ugly hack for time's sake
         // Push down corpse so it doesn't float on the air
-        gameObject.transform.Translate(0, -15, 0);
-
-        // Turn off collider 
-        boxCollider.enabled = false;
-
-        // Play enemy death sound
-
-
+        gameObject.transform.Translate(0, -15, 0);*/
     }
 
     public override void UpdatePos()

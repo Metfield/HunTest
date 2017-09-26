@@ -20,13 +20,14 @@ public class Player : Character
     GameObject walkingGun;
 
     Vector3 viewportCoordinates;
-    float cameraTrackingBounds;
+    int meleeReach;
 
     public Player (Main inMain, int initialHealth) : base(inMain, "Player", initialHealth, 370, 624)
     {
         movementSpeed = 3.0f;
-        x = 370;
+        x = 180;
         y = 624;
+        meleeReach = 12;
 
         // Assuming we are starting facing right
         previousDx = 1;        
@@ -52,10 +53,10 @@ public class Player : Character
         UpdatePos();
 
         // Follow player with camera when beyond 70% of the viewport
-        cameraTrackingBounds = 0.7f;
+        //cameraTrackingBounds = 0.7f;
     }
 
-    public void FrameEvent(int inMoveX, int inMoveY, bool inShoot)
+    public void FrameEvent(int inMoveX, int inMoveY, bool inShoot, bool melee)
     {
         CheckPlayerIsGrounded();
 
@@ -67,7 +68,11 @@ public class Player : Character
 
         if (isGrounded)
         {
-            if (inMoveY == -1)
+            if(melee)
+            {
+                Melee();
+            }
+            else if (inMoveY == -1)
             { 
                 Jump();
             }
@@ -147,18 +152,12 @@ public class Player : Character
         }
     }
 
-    bool jumpCooldown = false;
-    float jumpStartTime;
-
     public override void Jump()
     {
         // Play jump animation
         animator.SetBool("Jump", true);
         main.Trace("Player::Jump!");
         rigidBody.AddForce(gameObject.transform.up * physicsCompensationMultiplier * 230, ForceMode2D.Impulse);
-
-        jumpCooldown = true;
-        jumpStartTime = 0;
     }
 
     public override void UpdatePos()
@@ -168,14 +167,12 @@ public class Player : Character
 
         gameObject.transform.localPosition = playerPosition;
     }
-
-    /*public override void Kill()
-    {
-        
-    }*/
-
+  
     public override void Turn(int direction)
     {
+        // Change location of projectile origin
+        projectileOrigin.transform.localPosition = new Vector3(-1 * projectileOrigin.transform.localPosition.x, projectileOrigin.transform.localPosition.y, projectileOrigin.transform.localPosition.z);
+
         if (previousDx > direction)
             spriteRenderer.flipX = true;
         else
@@ -191,10 +188,6 @@ public class Player : Character
 
         //Spawn projectile
         Vector3 origin = projectileOrigin.transform.position;
-
-        if (previousDx < 0)
-            // TODO: Find nicer way... get localToWorld coordinates somehow
-            origin -= new Vector3(projectileOrigin.transform.localPosition.x * 6, 0, 0);
 
         // Fire!!
         gfx.FireProjectile(origin, previousDx);
@@ -219,6 +212,20 @@ public class Player : Character
         return rigidBody.velocity.x != 0;
     }
 
+    public override void Melee()
+    {
+        // Play animation
+        animator.SetTrigger("Melee");
+
+        // Hit whatever is in front
+        RaycastHit2D hit = Physics2D.Raycast(projectileOrigin.transform.position, new Vector2(previousDx, 0), meleeReach);
+        
+        if(hit.transform != null)
+        {
+            // Communicate punch!
+        }
+    }
+
     void UpdateWalkingGun()
     {
         // Update position and mirroring accordingly
@@ -238,6 +245,18 @@ public class Player : Character
                 walkingGun.transform.localPosition -= new Vector3(walkingGun.transform.localPosition.x * 2, 0, 0);
                 walkingGun.GetComponent<SpriteRenderer>().flipX = true;
             }
+        }
+    }
+
+    public override void OnBeingShot(int hitDirection, Projectile projectile = null)
+    {
+        // Check if we're croushing, in that case
+        // e don't take damage and don't destroy the bullet
+        if (!isCrouching)
+        {
+            projectile.Explode();
+            projectile.Recycle();
+            base.OnBeingShot(hitDirection, projectile);
         }
     }
 }

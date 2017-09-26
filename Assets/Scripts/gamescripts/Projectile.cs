@@ -65,7 +65,7 @@ public class Projectile : GeneralObject
         return !gameObject.activeSelf;
     }
 
-    private void Recycle()
+    public void Recycle()
     {
         spriteRenderer.flipX = false;
         rigidBody.velocity = Vector2.zero;
@@ -120,20 +120,20 @@ public class Projectile : GeneralObject
             if(colliderResults[0].gameObject.name.Contains("Enemy"))
             {
                 game.EnemyIsGettingShot(colliderResults[0].gameObject.name, direction);
+                
+                // Sh shh, time to sleep little bullet
+                Recycle();
             }
             // It's the player
             else if(colliderResults[0].gameObject.name.Contains("Player"))
             {
                 // Notify of target hit, specify from where
-                game.PlayerIsGettingShot(direction);
+                game.PlayerIsGettingShot(direction, this);
             }
-
-            // Sh shh, time to sleep little bullet
-            Recycle();
         }
     }
 
-    private void Explode()
+    public void Explode()
     {
         // Kaboom FX!
     }

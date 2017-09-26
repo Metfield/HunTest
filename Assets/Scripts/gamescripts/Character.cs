@@ -67,6 +67,7 @@ public abstract class Character : GeneralObject
 
     public abstract void Turn(int direction);
     public abstract void Jump();
+    public virtual void Melee() { }
 
     public virtual void Kill(int hitDirection)
     {
@@ -103,9 +104,16 @@ public abstract class Character : GeneralObject
                 animator.SetTrigger("DieBack");
             }
         }
+
+        // Ugly hack for time's sake
+        // Push down corpse so it doesn't float on the air
+        gameObject.transform.Translate(0, -15, 0);
+        rigidBody.velocity = Vector2.zero;
+        rigidBody.isKinematic = true;
+        boxCollider.enabled = false;
     }
 
-    public virtual void OnBeingShot(int hitDirection)
+    public virtual void OnBeingShot(int hitDirection, Projectile projectile = null)
     {
         //main.Trace(gameObject.name + " takes Damage, " + --health + " HP left");
 

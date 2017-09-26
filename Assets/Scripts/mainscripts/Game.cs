@@ -24,7 +24,7 @@ public class Game : MonoBehaviour
     bool playerShoot;
     bool playerShootRelease = true;
 
-    bool playerJumpRelease = true;
+    bool meleeKey, melee;
 
     List<Enemy> enemyObjects;
     List<GeneralObject> gameObjects;
@@ -49,9 +49,6 @@ public class Game : MonoBehaviour
         player = new Player(main, 5);
 
         FindEnemiesInScene();
-
-        /*AddLevelEnemy(new Enemy(main, 3, 530, 560));
-        AddLevelEnemy(new Enemy(main, 3, 516, 624));*/
 
         // Create projectile pool
         gfx.StartProjectiles();
@@ -81,7 +78,7 @@ public class Game : MonoBehaviour
 
     void GoPlayer()
     {
-        player.FrameEvent(playerHorizontal, playerVertical, playerShoot);
+        player.FrameEvent(playerHorizontal, playerVertical, playerShoot, melee);
     }
 
     private void GoKeys()
@@ -97,10 +94,16 @@ public class Game : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.UpArrow))      { jumpKey   = false; }
         if (Input.GetKeyDown(KeyCode.DownArrow))  { duckKey   = true; }
         if (Input.GetKeyUp(KeyCode.DownArrow))    { duckKey   = false; }
+
         if (Input.GetKeyDown(KeyCode.Z))          { jumpKey   = true;  }
         if (Input.GetKeyUp(KeyCode.Z))            { jumpKey   = false; }
         if (Input.GetKeyDown(KeyCode.A))          { shootKey  = true; }
         if (Input.GetKeyUp(KeyCode.A))            { shootKey  = false; }
+
+        if (Input.GetKeyDown(KeyCode.Q)) { meleeKey = true; }
+        if (Input.GetKeyUp(KeyCode.Q)) { meleeKey = false; }
+
+        if (Input.GetKeyDown(KeyCode.K)) { player.Kill(1); }
 
         playerHorizontal = 0;
         if (leftKey) { playerHorizontal-=1; }
@@ -109,6 +112,9 @@ public class Game : MonoBehaviour
         playerVertical = 0;
         if (jumpKey) { playerVertical-=1; }
         if (duckKey) { playerVertical+=1; }
+
+        melee = meleeKey;
+        meleeKey = false;
 
         jumpKey = false;
         playerShoot = false;
@@ -173,9 +179,9 @@ public class Game : MonoBehaviour
     }
 
     // Assuming 1P, otherwise just need to perform super simple search
-    public void PlayerIsGettingShot(int hitDirection)
+    public void PlayerIsGettingShot(int hitDirection, Projectile projectile)
     {
-        player.OnBeingShot(hitDirection);
+        player.OnBeingShot(hitDirection, projectile);
     }
 
     void GoObjects(bool inDoActive=true)
