@@ -105,7 +105,7 @@ public abstract class Character : GeneralObject
         }
     }
 
-    public void OnBeingShot(int hitDirection)
+    public virtual void OnBeingShot(int hitDirection)
     {
         //main.Trace(gameObject.name + " takes Damage, " + --health + " HP left");
 

@@ -45,6 +45,9 @@ public class Enemy : Character
         shotsPerBurst = 3;
         burstLengthInSecs = 0.8f;
         burstStep = burstLengthInSecs / shotsPerBurst;
+
+        // Start idle
+        animator.SetBool("Walk", false);
     }
 
     public override bool FrameEvent()
@@ -74,6 +77,15 @@ public class Enemy : Character
         return isOK;
     }
 
+    public override void OnBeingShot(int hitDirection)
+    {
+        // Take damage and maybe get killed
+        base.OnBeingShot(hitDirection);
+
+        if (direction != hitDirection)
+            Turn(-direction);
+    }
+
     void Look()
     {
         //Debug.DrawRay(projectileOrigin.transform.position, new Vector2(direction, 0) * sightRange, Color.green);
@@ -91,6 +103,9 @@ public class Enemy : Character
                 // Set time for start of shooting burst
                 burstStart = Time.realtimeSinceStartup;
                 shotsLeft = shotsPerBurst;
+
+                // Stop walking!
+                animator.SetBool("Walk", false);
             }
         }
     }
@@ -109,6 +124,7 @@ public class Enemy : Character
 
         // Update velocity
         patrolVelocity.x = (direction * patrolSpeed);
+        animator.SetBool("Walk", true);
     }
 
     public override void Shoot()
@@ -148,7 +164,7 @@ public class Enemy : Character
 
     public override void UpdatePos()
     {
-        rigidBody.transform.Translate(patrolVelocity);
+        rigidBody.transform.Translate(patrolVelocity);        
     }
 
     public override void Turn(int inDirection)
