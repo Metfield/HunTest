@@ -1,31 +1,18 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.Events;
 
-public class Enemy : GeneralObject
+public class Enemy : Character
 {
-    GameObject gameObject;
-
-    public Enemy(Main inMain, int inX, int inY)
-    {
-        SetGeneralVars(inMain, inX, inY);
-
-        sprites = gfx.GetLevelSprites("Enemies/Enemy3_2");
-
-        gameObject = GameObject.Instantiate(GameObject.Find("Enemy"));        
-        gameObject.transform.parent = gfx.level.transform;
-        gameObject.transform.position = new Vector3(x, -y, 1);
-
-        // Get sprite renderer
-        gameObject.GetComponent<SpriteRenderer>().enabled = true;
-
-        // Set sorting layer to GameObjects
-
+    public Enemy(Main inMain, int health, int inX, int inY) : base(inMain, "Enemy", health, inX, inY)
+    {        
         SetDirection(-1);
-    }
+    }    
 
     public override bool FrameEvent()
     {
         // enemy logic here
-
+       
 
         // temp logic :)
         //------------------------------------------------------------
@@ -36,17 +23,13 @@ public class Enemy : GeneralObject
         }
         //------------------------------------------------------------
 
-
-
         UpdatePos();
 
-
         return isOK;
-
     }
 
 
-    void UpdatePos()
+    public override void UpdatePos()
     {
         gfx.SetPos(gameObject, x, y);
     }
@@ -57,8 +40,18 @@ public class Enemy : GeneralObject
         gfx.SetDirX(gameObject, direction);
     }
 
-    public override void Kill()
+    public override void Shoot()
     {
-       
+        throw new NotImplementedException();
+    }
+
+    public override void Turn(int direction)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void Jump()
+    {
+        throw new NotImplementedException();
     }
 }

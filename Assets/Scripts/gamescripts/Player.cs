@@ -2,36 +2,7 @@
 using System.Collections;
 using UnityEngine;
 
-public abstract class SpriteCharacter
-{
-    protected Main main;
-    protected Game game;
-    protected Gfx gfx;
-    protected Snd snd;
-
-    protected Animator animator;
-
-    protected float movementSpeed;
-    protected bool isGrounded;
-
-    protected SpriteRenderer spriteRenderer;
-    protected GameObject gameObject;
-    protected Rigidbody2D rigidBody;
-
-    public abstract void UpdatePos();
-    public abstract void Shoot();
-    public abstract void Kill();
-    public abstract void Turn(int direction);
-    public abstract void Jump();
-    public abstract void Duck();
-    public abstract void StandUp();
-    public abstract void StandStill();
-
-    public virtual void FrameEvent() {  }
-    public virtual void FrameEvent(int inMoveX, int inMoveY, bool inShoot) { }
-}
-
-public class Player : SpriteCharacter
+public class Player : Character
 {
     Vector3 playerPosition;
 
@@ -46,38 +17,20 @@ public class Player : SpriteCharacter
     bool isCrouching;
     float physicsCompensationMultiplier = 4000;
     Vector3 colliderExtents;
-
-    GameObject projectileOrigin;
+        
     GameObject walkingGun;
 
-    public Player (Main inMain)
+    public Player (Main inMain, int initialHealth) : base(inMain, "Player", initialHealth, 370, 624)
     {
-        main = inMain;
-        game = main.game;
-        gfx  = main.gfx;
-        snd  = main.snd;
-
-        //Sprite[] sprites = gfx.GetLevelSprites("Players/Player1");
-
+        movementSpeed = 3.0f;
         x = 370;
         y = 624;
-        movementSpeed = 3.0f;
 
         // Assuming we are starting facing right
-        previousDx = 1;
-
-        // We're using the Unity engine, let's use prefabs :D
-        gameObject = GameObject.Instantiate(GameObject.Find("Player"));
-        gameObject.transform.parent = gfx.level.transform;
-        gameObject.transform.position = new Vector3(x, -y, 1);
+        previousDx = 1;        
 
         playerPosition = gameObject.transform.localPosition;
-
-        // Get key components
-        spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
-        animator = gameObject.GetComponent<Animator>();
-        rigidBody = gameObject.GetComponent<Rigidbody2D>();
-
+      
         // Enable renderer
         spriteRenderer.enabled = true;
 
@@ -89,9 +42,6 @@ public class Player : SpriteCharacter
         horizontalExtents = new Vector3(colliderExtents.x, 0, 0);
         heightOffset = new Vector3(0.0f, -0.01f);
 
-        // Get projectile origin        
-        projectileOrigin = gameObject.transform.Find("BulletOrigin").gameObject;
-
         // Get walking gun
         walkingGun = gameObject.transform.Find("WalkingGun").gameObject;
         walkingGun.SetActive(false);
@@ -100,7 +50,7 @@ public class Player : SpriteCharacter
         UpdatePos();
     }
 
-    public override void FrameEvent(int inMoveX, int inMoveY, bool inShoot)
+    public void FrameEvent(int inMoveX, int inMoveY, bool inShoot)
     {
         CheckPlayerIsGrounded();
 
@@ -202,12 +152,6 @@ public class Player : SpriteCharacter
         }
     }
 
-    public override void Duck()
-    {
-        animator.SetBool("Duck", true);
-        main.Trace("Player::Duck!"); 
-    }
-
     public override void UpdatePos()
     {
         playerPosition.x = x;
@@ -219,12 +163,6 @@ public class Player : SpriteCharacter
     public override void Kill()
     {
         
-    }
-
-    public override void StandStill()
-    {        
-        animator.SetBool("Walk", false);
-        animator.SetBool("Jump", false);
     }
 
     public override void Turn(int direction)
@@ -296,10 +234,5 @@ public class Player : SpriteCharacter
                 walkingGun.GetComponent<SpriteRenderer>().flipX = true;
             }
         }
-    }
-
-    public override void StandUp()
-    {
-        animator.SetBool("Duck", false);
     }
 }

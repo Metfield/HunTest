@@ -9,8 +9,15 @@ public class Projectile : GeneralObject
     BoxCollider2D boxCollider;
     SpriteRenderer spriteRenderer;
 
-	public Projectile(GameObject go, Transform parentTransform)
+    // Collision-related stuff
+    Collider2D[] colliderResults;
+    ContactFilter2D colliderContactFilter;
+
+	public Projectile(Main inMain, GameObject go, Transform parentTransform)
     {
+        // Set general variables
+        SetGeneralVars(inMain, (int)go.transform.position.x, (int)go.transform.position.y);
+
         // Instantiate bullet object
         gameObject = GameObject.Instantiate(go);
 
@@ -31,6 +38,11 @@ public class Projectile : GeneralObject
 
         // Make this ready for pooling
         gameObject.SetActive(false);
+
+        // Setup collider related stuff
+        // Will only care about layer 8 (Character)
+        // This needs to be setup on every character game object
+        colliderContactFilter.layerMask = LayerMask.NameToLayer("Character");
     }
 
     public void Prepare()
@@ -65,12 +77,59 @@ public class Projectile : GeneralObject
         if (!gameObject.activeSelf)
             return true;
 
+        // Check if bullet has flown out of the viewport
+        if (CheckOutOfBounds())
+            return true;
+
+        CheckForCollisions();
+
+        return true;
+    }
+
+    private bool CheckOutOfBounds()
+    {
         Vector2 viewportPoint = Camera.main.WorldToViewportPoint(gameObject.transform.position);
 
         // Check if it's no longer visible
         if (viewportPoint.x > 1 || viewportPoint.x < 0)
+        {
+            Recycle();
+            return true;
+        }
+
+        return false;
+    }
+
+    private void CheckForCollisions()
+    {
+        // We only care about the first result
+        // Need to create a new array every frame because Unity
+        colliderResults = new Collider2D[1];
+
+        // Make sure we're hitting a character
+        if (boxCollider.OverlapCollider(colliderContactFilter, colliderResults) == 1)
+        {
+            // Explode projectile
+            Explode();
+
+            // Sh shh, time to sleep little bullet
             Recycle();
 
-        return true;
+            // It's an enemy
+            if(colliderResults[0].gameObject.name.Contains("Enemy"))
+            {
+                game.EnemyIsGettingShot(colliderResults[0].gameObject.name);
+            }
+            // It's the player
+            else if(colliderResults[0].gameObject.name.Contains("Player"))
+            {
+                game.PlayerIsGettingShot();
+            }
+        }
+    }
+
+    private void Explode()
+    {
+        // Kaboom FX!
     }
 }

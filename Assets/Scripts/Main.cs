@@ -44,7 +44,6 @@ public class Main : MonoBehaviour
 		Debug.Log ("Trace:"+inString);
 	}
 
-
     void StartGfx()
     {
         gfx = go.AddComponent<Gfx>();

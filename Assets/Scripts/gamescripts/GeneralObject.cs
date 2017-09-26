@@ -10,7 +10,7 @@ public class GeneralObject
 	protected Game game;
 	protected Gfx gfx;
     protected Snd snd;
-    protected Sprite[] sprites;
+    
     protected int direction;
 
     protected void SetGeneralVars(Main inMain, int inX, int inY){
@@ -24,8 +24,5 @@ public class GeneralObject
 
     }
 
-	public virtual bool FrameEvent(){ return false; }
-    public virtual void Kill() {}
-
-	
+    public virtual bool FrameEvent(){ return false; }
 }

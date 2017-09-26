@@ -60,7 +60,7 @@ public class Gfx : MonoBehaviour
         // Setup Level
         // --------------------------------------------------------------------------------
 
-        level = GameObject.Instantiate(GameObject.Find("Level"));
+        level = GameObject.Find("Level");
         level.transform.localScale = myResVector;
         level.transform.position = new Vector3(0, 0, 1);
         levelPos = level.transform.position;
@@ -73,7 +73,7 @@ public class Gfx : MonoBehaviour
         SetParent(background, null);
 
         // Initialize projectiles
-        StartProjectiles();
+        //StartProjectiles();
     }
 
     public Sprite[] GetLevelSprites(string inName)

@@ -24,7 +24,9 @@ public class Game : MonoBehaviour
     bool playerShoot;
     bool playerShootRelease = true;
 
+    List<Enemy> enemyObjects;
     List<GeneralObject> gameObjects;
+
     int gameObjectLength;
 
     public void Init(Main inMain)
@@ -40,12 +42,17 @@ public class Game : MonoBehaviour
         gameObjects = new List<GeneralObject>();
         gameObjectLength = 0;
 
-        player = new Player(main);
+        enemyObjects = new List<Enemy>();
 
-        AddLevelObject(new Enemy(main, 530, 560));
-        AddLevelObject(new Enemy(main, 516, 624));
+        player = new Player(main, 5);
 
-        // Add projectiles to object list        
+        AddLevelEnemy(new Enemy(main, 3, 530, 560));
+        AddLevelEnemy(new Enemy(main, 3, 516, 624));
+
+        // Create projectile pool
+        gfx.StartProjectiles();
+
+        // Add projectiles to object list
         foreach(Projectile p in gfx.GetProjectilePool().projectiles)
         {
             AddLevelObject(p);
@@ -133,8 +140,35 @@ public class Game : MonoBehaviour
         gameObjectLength++;
     }
 
+    public void AddLevelEnemy(Enemy enemy)
+    {
+        enemyObjects.Add(enemy);
+    }
+
+    public void EnemyIsGettingShot(string enemyName)
+    {
+        main.Trace(enemyName + " is getting shot");
+
+        // Search could be done in parallel
+        foreach(Enemy enemy in enemyObjects)
+        {
+            if(enemy.GetName() == enemyName)
+            {
+                enemy.OnBeingShot();
+                break;
+            }
+        }
+    }
+
+    // Assuming 1P, otherwise just need to perform super simple search
+    public void PlayerIsGettingShot()
+    {
+        player.OnBeingShot();
+    }
+
     void GoObjects(bool inDoActive=true)
     {
+        // Do game objects
         for (int i = 0; i<gameObjectLength; i++)
         {
             if (!gameObjects[i].FrameEvent())
@@ -142,6 +176,16 @@ public class Game : MonoBehaviour
                 gameObjects.RemoveAt(i);
                 i--;
                 gameObjectLength--;
+            }
+        }
+
+        // Do enemies
+        for (int i = 0; i < enemyObjects.Count; i++)
+        {
+            if (!enemyObjects[i].FrameEvent())
+            {
+                enemyObjects.RemoveAt(i);
+                i--;
             }
         }
     }

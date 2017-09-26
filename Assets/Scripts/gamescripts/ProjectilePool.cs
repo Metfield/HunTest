@@ -9,9 +9,12 @@ public class ProjectilePool
 
     GameObject projectileGameObject;
     Transform parentTransform;
+    Main main;
 	
-	public ProjectilePool(int initialSize, Main main)
+	public ProjectilePool(int initialSize, Main inMain)
     {
+        main = inMain;
+
         // Save parent transform
         parentTransform = main.gfx.level.transform;
 
@@ -25,7 +28,7 @@ public class ProjectilePool
         // Create objects and add to object list
         for (int i = 0; i < initialSize; i++)
         {
-            projectiles.Add(new Projectile(projectileGameObject, parentTransform));
+            projectiles.Add(new Projectile(main, projectileGameObject, parentTransform));
         }
 
         projectileGameObject.SetActive(false);
@@ -42,7 +45,7 @@ public class ProjectilePool
             }
         }
 
-        Projectile newProjectile = new Projectile(projectileGameObject, parentTransform);
+        Projectile newProjectile = new Projectile(main, projectileGameObject, parentTransform);
         newProjectile.Prepare();
         projectiles.Add(newProjectile);
 
