@@ -138,7 +138,7 @@ public class Player : Character
         previousDx = dx;
 
         // Add force to player
-        rigidBody.AddForce(new Vector2(dx * movementSpeed * (isGrounded ? physicsCompensationMultiplier : physicsCompensationMultiplier / 2), 0), ForceMode2D.Impulse);
+        rigidBody.AddForce(new Vector2(dx * movementSpeed * physicsCompensationMultiplier, 0), ForceMode2D.Impulse);
 
         // Play walk animation
         if (isGrounded)
@@ -158,7 +158,7 @@ public class Player : Character
             // Play jump animation
             animator.SetBool("Jump", true);
             main.Trace("Player::Jump!");
-            rigidBody.AddForce(gameObject.transform.up * physicsCompensationMultiplier * 100, ForceMode2D.Impulse);
+            rigidBody.AddForce(gameObject.transform.up * physicsCompensationMultiplier * 230, ForceMode2D.Impulse);
 
             jumpCooldown = true;
             jumpStartTime = 0;
