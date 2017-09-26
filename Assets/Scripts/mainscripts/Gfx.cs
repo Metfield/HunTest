@@ -29,6 +29,9 @@ public class Gfx : MonoBehaviour
 
     ProjectilePool projectilePool;
 
+    // Store level bounds
+    GameObject levelLeftBound, levelRightBound;
+
     public void Init(Main inMain)
     {
         main = inMain;
@@ -66,6 +69,11 @@ public class Gfx : MonoBehaviour
         levelPos = level.transform.position;
 
         levelSprites = new Dictionary<string, Sprite[]>();
+
+        // Get level bounds
+        // This assumes they are ordered in the hierarchy in this way
+        levelLeftBound = level.transform.GetChild(0).gameObject;
+        levelRightBound = level.transform.GetChild(1).gameObject;
 
         MakeGameObject("Level1", Resources.Load<Sprite>("Level/Level"), 0, 0, "Level");
 
@@ -179,6 +187,24 @@ public class Gfx : MonoBehaviour
 
     public void MoveCamera(Vector3 newPosition)
     {
+        // If level bounds are visible don't move!
+        float leftBoundCoord = cam.WorldToViewportPoint(levelLeftBound.transform.position).x;
+        float rightBoundCoord = cam.WorldToViewportPoint(levelRightBound.transform.position).x;
+
+        // Bail if we're near the left bound
+        if (leftBoundCoord >= 0 && leftBoundCoord <= 1)
+        {
+            if (newPosition.x < cam.transform.position.x)
+                return;
+        }
+        // Bail if we're near the right bound
+        else if(rightBoundCoord >= 0 && rightBoundCoord <= 1)
+        {
+            if (newPosition.x > cam.transform.position.x)
+                return;
+        }
+
+        // Move camera
         cam.transform.position = newPosition;
         background.transform.position = newPosition + new Vector3(0, 0, 10);
     }
