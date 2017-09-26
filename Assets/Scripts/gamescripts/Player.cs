@@ -20,6 +20,9 @@ public class Player : Character
         
     GameObject walkingGun;
 
+    Vector3 viewportCoordinates;
+    float cameraTrackingBounds; 
+
     public Player (Main inMain, int initialHealth) : base(inMain, "Player", initialHealth, 370, 624)
     {
         movementSpeed = 3.0f;
@@ -48,6 +51,9 @@ public class Player : Character
        
         // Set initial position in map
         UpdatePos();
+
+        // Follow player with camera when beyond 70% of the viewport
+        cameraTrackingBounds = 0.7f;
     }
 
     public void FrameEvent(int inMoveX, int inMoveY, bool inShoot)
@@ -97,6 +103,23 @@ public class Player : Character
 
         if (inShoot)
             Shoot();
+
+        // Handle camera movement
+        TraceCamera();
+    }
+
+    private void TraceCamera()
+    {
+        // Get viewport coordinates
+        viewportCoordinates = Camera.main.WorldToViewportPoint(gameObject.transform.position);
+        
+        // Move camera only if we're nearing edge of screen
+        // It failed as it was jumping around too muchg... needed more work but there's no time!
+        //if(viewportCoordinates.x < 1 - cameraTrackingBounds || viewportCoordinates.x > cameraTrackingBounds)
+        {
+            // Only care for X right now
+            gfx.MoveCamera(new Vector3(gameObject.transform.position.x, gfx.cam.transform.position.y, gfx.cam.transform.position.z));
+        }
     }
 
     private void CheckPlayerIsGrounded()

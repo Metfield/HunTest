@@ -176,4 +176,10 @@ public class Gfx : MonoBehaviour
     {
         g.GetComponent<SpriteRenderer>().sprite = s;
     }
+
+    public void MoveCamera(Vector3 newPosition)
+    {
+        cam.transform.position = newPosition;
+        background.transform.position = newPosition + new Vector3(0, 0, 10);
+    }
 }
