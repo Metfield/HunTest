@@ -183,10 +183,10 @@ public class Player : Character
         gameObject.transform.localPosition = playerPosition;
     }
 
-    public override void Kill()
+    /*public override void Kill()
     {
         
-    }
+    }*/
 
     public override void Turn(int direction)
     {

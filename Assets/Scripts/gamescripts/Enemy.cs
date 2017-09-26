@@ -12,7 +12,12 @@ public class Enemy : Character
     public override bool FrameEvent()
     {
         // enemy logic here
-       
+
+        // If in sight and not dead
+        if (isDead)
+        {
+            return isOK;
+        }
 
         // temp logic :)
         //------------------------------------------------------------
@@ -28,16 +33,38 @@ public class Enemy : Character
         return isOK;
     }
 
+    public override void Kill(int hitDirection)
+    {
+        // Plays death animation
+        base.Kill(hitDirection);
+
+        // Ugly hack for time's sake
+        // Push down corpse so it doesn't float on the air
+        gameObject.transform.Translate(0, -15, 0);
+
+        // Turn off collider
+        boxCollider.enabled = false;
+
+        // Play enemy death sound
+
+
+    }
 
     public override void UpdatePos()
     {
+
         gfx.SetPos(gameObject, x, y);
     }
 
     void SetDirection(int inDirection)
     {
         direction = inDirection;
-        gfx.SetDirX(gameObject, direction);
+
+        //gfx.SetDirX(gameObject, direction);
+        if (direction < 0)
+            spriteRenderer.flipX = true;
+        else
+            spriteRenderer.flipX = false;
     }
 
     public override void Shoot()

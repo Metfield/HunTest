@@ -18,11 +18,14 @@ public abstract class Character : GeneralObject
 
     protected GameObject projectileOrigin;
 
+    protected bool isDead;
+
     static uint uid = 0;
 
     public Character(Main inMain, string characterGameObjectName, int health, int inX, int inY)
     {
         SetGeneralVars(inMain, inX, inY);
+        isDead = false;
 
         // We're using the Unity engine, let's use prefabs :D
         gameObject = GameObject.Instantiate(GameObject.Find(characterGameObjectName));
@@ -33,6 +36,7 @@ public abstract class Character : GeneralObject
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
         animator = gameObject.GetComponent<Animator>();
         rigidBody = gameObject.GetComponent<Rigidbody2D>();
+        boxCollider = gameObject.GetComponent<BoxCollider2D>();
 
         // Get projectile origin        
         projectileOrigin = gameObject.transform.Find("BulletOrigin").gameObject;
@@ -49,24 +53,56 @@ public abstract class Character : GeneralObject
     public abstract void Turn(int direction);
     public abstract void Jump();
 
-    public virtual void Kill()
+    public virtual void Kill(int hitDirection)
     {
+        // Character is dead :'(
         main.Trace(gameObject.name + " Dies!!");
-        gameObject.SetActive(false);
+        isDead = true;
 
         // Fall front or back
-//        if(rigidBody.velocity < 0)
-
+        // Character is facing left
+        if (spriteRenderer.flipX)
+        {
+            // Fall to back
+            if(hitDirection < 0)
+            {
+                animator.SetTrigger("DieBack");
+            }
+            // Fall to front
+            else
+            {
+                animator.SetTrigger("DieFront");
+            }
+        }
+        // Character is facing right
+        else
+        {
+            // Fall to front
+            if (hitDirection < 0)
+            {
+                animator.SetTrigger("DieFront");
+            }
+            // Fall to back
+            else
+            {
+                animator.SetTrigger("DieBack");
+            }
+        }
     }
 
-    public void OnBeingShot()
+    public void OnBeingShot(int hitDirection)
     {
-        main.Trace(gameObject.name + " takes Damage, " + --health + " HP left");
+        //main.Trace(gameObject.name + " takes Damage, " + --health + " HP left");
 
-        if (health == 0)
+        if (--health == 0)
         {
-            Kill();
+            Kill(hitDirection);
         }
+
+        // Play hit sound
+
+        // Some blood FX?
+
     }
 
     public void Duck()

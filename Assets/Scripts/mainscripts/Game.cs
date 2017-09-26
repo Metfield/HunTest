@@ -145,7 +145,7 @@ public class Game : MonoBehaviour
         enemyObjects.Add(enemy);
     }
 
-    public void EnemyIsGettingShot(string enemyName)
+    public void EnemyIsGettingShot(string enemyName, int hitDirection)
     {
         main.Trace(enemyName + " is getting shot");
 
@@ -154,16 +154,16 @@ public class Game : MonoBehaviour
         {
             if(enemy.GetName() == enemyName)
             {
-                enemy.OnBeingShot();
+                enemy.OnBeingShot(hitDirection);
                 break;
             }
         }
     }
 
     // Assuming 1P, otherwise just need to perform super simple search
-    public void PlayerIsGettingShot()
+    public void PlayerIsGettingShot(int hitDirection)
     {
-        player.OnBeingShot();
+        player.OnBeingShot(hitDirection);
     }
 
     void GoObjects(bool inDoActive=true)

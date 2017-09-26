@@ -109,22 +109,27 @@ public class Projectile : GeneralObject
         // Make sure we're hitting a character
         if (boxCollider.OverlapCollider(colliderContactFilter, colliderResults) == 1)
         {
+            // Specify from where is the target being hit
+            // Note values are inverted
+            int direction = rigidBody.velocity.x < 0 ? 1 : -1;
+
             // Explode projectile
             Explode();
-
-            // Sh shh, time to sleep little bullet
-            Recycle();
 
             // It's an enemy
             if(colliderResults[0].gameObject.name.Contains("Enemy"))
             {
-                game.EnemyIsGettingShot(colliderResults[0].gameObject.name);
+                game.EnemyIsGettingShot(colliderResults[0].gameObject.name, direction);
             }
             // It's the player
             else if(colliderResults[0].gameObject.name.Contains("Player"))
             {
-                game.PlayerIsGettingShot();
+                // Notify of target hit, specify from where
+                game.PlayerIsGettingShot(direction);
             }
+
+            // Sh shh, time to sleep little bullet
+            Recycle();
         }
     }
 
