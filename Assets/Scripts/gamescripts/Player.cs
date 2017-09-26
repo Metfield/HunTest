@@ -63,10 +63,8 @@ public class Player : Character
         if (inMoveX == 0)
             walkingGun.SetActive(false);
 
-        if (isGrounded)
-            GameObject.Find("Blah").GetComponent<SpriteRenderer>().enabled = true;
-        else
-            GameObject.Find("Blah").GetComponent<SpriteRenderer>().enabled = false;
+        // Lets player jump through platform
+        Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Character"), LayerMask.NameToLayer("Level"), !isGrounded && rigidBody.velocity.y > 0);
 
         if (isGrounded)
         {
