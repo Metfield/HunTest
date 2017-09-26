@@ -6,8 +6,7 @@ public class Player : Character
 {
     Vector3 playerPosition;
 
-    float x, previousDx;
-    float y;
+    float previousDx;
 
     // Gotta tickle Unity with these helpers in order for jumping not to go insane
     float groundedCastMargin;
@@ -21,7 +20,7 @@ public class Player : Character
     GameObject walkingGun;
 
     Vector3 viewportCoordinates;
-    float cameraTrackingBounds; 
+    float cameraTrackingBounds;
 
     public Player (Main inMain, int initialHealth) : base(inMain, "Player", initialHealth, 370, 624)
     {
@@ -153,24 +152,13 @@ public class Player : Character
 
     public override void Jump()
     {
-        if (!jumpCooldown)
-        {
-            // Play jump animation
-            animator.SetBool("Jump", true);
-            main.Trace("Player::Jump!");
-            rigidBody.AddForce(gameObject.transform.up * physicsCompensationMultiplier * 230, ForceMode2D.Impulse);
+        // Play jump animation
+        animator.SetBool("Jump", true);
+        main.Trace("Player::Jump!");
+        rigidBody.AddForce(gameObject.transform.up * physicsCompensationMultiplier * 230, ForceMode2D.Impulse);
 
-            jumpCooldown = true;
-            jumpStartTime = 0;
-        }
-        else
-        {
-            // Wait for 0.2 secs after jump to avoid stupid bouncing
-            if((jumpStartTime += Time.deltaTime) > 0.02f)
-            {
-                jumpCooldown = false;
-            }
-        }
+        jumpCooldown = true;
+        jumpStartTime = 0;
     }
 
     public override void UpdatePos()

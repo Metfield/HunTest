@@ -24,6 +24,8 @@ public class Game : MonoBehaviour
     bool playerShoot;
     bool playerShootRelease = true;
 
+    bool playerJumpRelease = true;
+
     List<Enemy> enemyObjects;
     List<GeneralObject> gameObjects;
 
@@ -46,8 +48,10 @@ public class Game : MonoBehaviour
 
         player = new Player(main, 5);
 
-        AddLevelEnemy(new Enemy(main, 3, 530, 560));
-        AddLevelEnemy(new Enemy(main, 3, 516, 624));
+        FindEnemiesInScene();
+
+        /*AddLevelEnemy(new Enemy(main, 3, 530, 560));
+        AddLevelEnemy(new Enemy(main, 3, 516, 624));*/
 
         // Create projectile pool
         gfx.StartProjectiles();
@@ -85,7 +89,6 @@ public class Game : MonoBehaviour
         // ---------------------------------------------------------------
         // NORMAL KEYBOARD
 		// ---------------------------------------------------------------
-
 		if (Input.GetKeyDown(KeyCode.LeftArrow))  { leftKey   = true; }
         if (Input.GetKeyUp(KeyCode.LeftArrow))    { leftKey   = false; }
         if (Input.GetKeyDown(KeyCode.RightArrow)) { rightKey  = true; }
@@ -94,7 +97,7 @@ public class Game : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.UpArrow))      { jumpKey   = false; }
         if (Input.GetKeyDown(KeyCode.DownArrow))  { duckKey   = true; }
         if (Input.GetKeyUp(KeyCode.DownArrow))    { duckKey   = false; }
-        if (Input.GetKeyDown(KeyCode.Z))          { jumpKey   = true; }
+        if (Input.GetKeyDown(KeyCode.Z))          { jumpKey   = true;  }
         if (Input.GetKeyUp(KeyCode.Z))            { jumpKey   = false; }
         if (Input.GetKeyDown(KeyCode.A))          { shootKey  = true; }
         if (Input.GetKeyUp(KeyCode.A))            { shootKey  = false; }
@@ -107,6 +110,7 @@ public class Game : MonoBehaviour
         if (jumpKey) { playerVertical-=1; }
         if (duckKey) { playerVertical+=1; }
 
+        jumpKey = false;
         playerShoot = false;
 
         if (shootKey)
@@ -143,6 +147,14 @@ public class Game : MonoBehaviour
     public void AddLevelEnemy(Enemy enemy)
     {
         enemyObjects.Add(enemy);
+    }
+
+    void FindEnemiesInScene()
+    {
+        foreach(GameObject enemyObject in GameObject.FindGameObjectsWithTag("Enemy"))
+        {
+            AddLevelEnemy(new Enemy(main, 3, enemyObject));
+        }
     }
 
     public void EnemyIsGettingShot(string enemyName, int hitDirection)

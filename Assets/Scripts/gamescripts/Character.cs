@@ -22,15 +22,21 @@ public abstract class Character : GeneralObject
 
     static uint uid = 0;
 
-    public Character(Main inMain, string characterGameObjectName, int health, int inX, int inY)
+    public Character(Main inMain, string characterGameObjectName, int health, int inX, int inY, GameObject go = null)
     {
         SetGeneralVars(inMain, inX, inY);
         isDead = false;
 
         // We're using the Unity engine, let's use prefabs :D
-        gameObject = GameObject.Instantiate(GameObject.Find(characterGameObjectName));
-        gameObject.transform.parent = gfx.level.transform;
-        gameObject.transform.position = new Vector3(x, -y, 1);
+        if (go != null)
+            // Get game object if we already have one
+            gameObject = go;
+        else
+        {
+            gameObject = GameObject.Instantiate(GameObject.Find(characterGameObjectName));
+            gameObject.transform.parent = gfx.level.transform;
+            gameObject.transform.position = new Vector3(x, -y, 1);
+        }
 
         // Get key components
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
