@@ -55,7 +55,16 @@ public abstract class Character : GeneralObject
     }
 
     public abstract void UpdatePos();
-    public abstract void Shoot();
+
+    public virtual void Shoot()
+    {
+        // Play animation
+        animator.SetTrigger("Shoot");
+
+        // Play sound
+        snd.PlayAudioClip("Gun");
+    }
+
     public abstract void Turn(int direction);
     public abstract void Jump();
 

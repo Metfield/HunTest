@@ -5,9 +5,19 @@ using UnityEngine.Events;
 public class Enemy : Character
 {
     Vector3 patrolVelocity;
-    float patrolSpeed = 0.05f;
+    float patrolSpeed = 2f;
 
     Vector3 patrolLeftBound, patrolRightBound;
+
+    float sightRange = 400;
+    
+    // Shooting-related variables
+    bool isShooting;
+    int shotsPerBurst, shotsLeft;
+    float burstLengthInSecs;
+    float burstStep;
+    float burstStart;
+    float dt;
 
     public Enemy(Main inMain, int health, int inX, int inY) : base(inMain, "Enemy", health, inX, inY)
     {
@@ -30,6 +40,11 @@ public class Enemy : Character
 
         // Object is kinematic
         rigidBody.isKinematic = true;
+
+        // Initialize shooting-related stuff
+        shotsPerBurst = 3;
+        burstLengthInSecs = 0.8f;
+        burstStep = burstLengthInSecs / shotsPerBurst;
     }
 
     public override bool FrameEvent()
@@ -40,37 +55,44 @@ public class Enemy : Character
             return isOK;
         }
 
-        // Look
+        if(isShooting)
+        {
+            Shoot();
+        }
+        else
+        {
+            // Patrol
+            Patrol();
 
+            // Look
+            Look();
 
-        // Shoot
-        // Cooldown
-
-        // Patrol
-        Patrol();
-
-
-
-
-
-
-
-
-        /*
-
-          // temp logic :)
-          //------------------------------------------------------------
-
-          if ((direction==1 && x > 600) || (direction==-1 && x < 480))
-          {
-              Turn(-direction);
-          }
-          //------------------------------------------------------------
-          */
-
-        UpdatePos();
+            // Update position
+            UpdatePos();
+        }
 
         return isOK;
+    }
+
+    void Look()
+    {
+        //Debug.DrawRay(projectileOrigin.transform.position, new Vector2(direction, 0) * sightRange, Color.green);
+        RaycastHit2D hit = Physics2D.Raycast(projectileOrigin.transform.position, new Vector2(direction, 0), sightRange);
+
+        if (hit.transform != null)
+        {
+            // Check if hit was player
+            if (hit.transform.gameObject.name.Contains("Player"))
+            {
+                // Target spotted!
+                isShooting = true;
+                main.Trace(GetName() + " sees " + hit.transform.gameObject.name);
+
+                // Set time for start of shooting burst
+                burstStart = Time.realtimeSinceStartup;
+                shotsLeft = shotsPerBurst;
+            }
+        }
     }
 
     void Patrol()
@@ -86,7 +108,25 @@ public class Enemy : Character
         }
 
         // Update velocity
-        patrolVelocity.x = (direction * 2);
+        patrolVelocity.x = (direction * patrolSpeed);
+    }
+
+    public override void Shoot()
+    {
+        dt = Time.realtimeSinceStartup;
+
+        if (dt - burstStart > burstStep)
+        {
+            // Update stamp
+            burstStart = dt;
+
+            // Handle animation, sound and actual projectile
+            base.Shoot();
+            gfx.FireProjectile(projectileOrigin.transform.position, direction);
+
+            if (--shotsLeft == 0)
+                isShooting = false;
+        }
     }
 
     public override void Kill(int hitDirection)
@@ -111,15 +151,11 @@ public class Enemy : Character
         rigidBody.transform.Translate(patrolVelocity);
     }
 
-    public override void Shoot()
-    {
-        throw new NotImplementedException();
-    }
-
     public override void Turn(int inDirection)
     {
         direction = inDirection;
-        
+        projectileOrigin.transform.localPosition = new Vector3(-1 * projectileOrigin.transform.localPosition.x, projectileOrigin.transform.localPosition.y, projectileOrigin.transform.localPosition.z);
+
         if (direction < 0)
             spriteRenderer.flipX = true;
         else

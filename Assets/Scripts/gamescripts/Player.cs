@@ -187,11 +187,7 @@ public class Player : Character
         if (isCrouching)
             return;
 
-        // Play animation
-        animator.SetTrigger("Shoot");
-
-        // Play sound
-        snd.PlayAudioClip("Gun");
+        base.Shoot();        
 
         //Spawn projectile
         Vector3 origin = projectileOrigin.transform.position;
