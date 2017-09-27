@@ -228,6 +228,17 @@ public class Game : MonoBehaviour
         }
     }
 
+    public void EnemyIsPunched(string enemyName, int direction)
+    {
+        // Search for punched dude
+        foreach(Enemy enemy in enemyObjects)
+        {
+            if (enemy.GetName() == enemyName)
+                enemy.WasPunched(direction);
+        }
+        
+    }
+
     public void EnemyDied()
     {
         if (--enemiesInLevel == 0)

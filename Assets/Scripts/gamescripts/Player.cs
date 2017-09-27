@@ -27,7 +27,7 @@ public class Player : Character
         movementSpeed = 3.0f;
         x = 180;
         y = 624;
-        meleeReach = 12;
+        meleeReach = 20;
 
         // Assuming we are starting facing right
         previousDx = 1;        
@@ -220,9 +220,14 @@ public class Player : Character
         // Hit whatever is in front
         RaycastHit2D hit = Physics2D.Raycast(projectileOrigin.transform.position, new Vector2(previousDx, 0), meleeReach);
         
-        if(hit.transform != null)
+        Debug.DrawRay(projectileOrigin.transform.position, new Vector2(previousDx, 0)* meleeReach, Color.green);
+
+        if (hit.transform != null)
         {
             // Communicate punch!
+            // Can't directly access the collider's object because it
+            // doesn't inherit from MonoBehaviour :( didn't add script as component either
+            game.EnemyIsPunched(hit.transform.gameObject.name, previousDx < 0 ? 1 : -1);
         }
     }
 

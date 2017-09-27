@@ -180,6 +180,11 @@ public class Enemy : Character
             spriteRenderer.flipX = false;
     }
 
+    public void WasPunched(int dir)
+    {
+        Kill(dir);
+    }
+
     public override void Jump()
     {
         throw new NotImplementedException();
