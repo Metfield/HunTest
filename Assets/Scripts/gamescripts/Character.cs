@@ -22,6 +22,8 @@ public abstract class Character : GeneralObject
 
     static uint uid = 0;
 
+    TextMesh healthText;
+
     public Character(Main inMain, string characterGameObjectName, int health, int inX, int inY, GameObject go = null)
     {
         SetGeneralVars(inMain, inX, inY);
@@ -52,6 +54,8 @@ public abstract class Character : GeneralObject
 
         // Set initial health
         this.health = health;
+        healthText = gameObject.transform.Find("HealthUI").GetComponent<TextMesh>();
+        healthText.text = "HP " + health;
     }
 
     public abstract void UpdatePos();
@@ -74,6 +78,9 @@ public abstract class Character : GeneralObject
         // Character is dead :'(
         main.Trace(gameObject.name + " Dies!!");
         isDead = true;
+
+        // Turn off health UI
+        healthText.text = "";
 
         // Fall front or back
         // Character is facing left
@@ -120,7 +127,11 @@ public abstract class Character : GeneralObject
         if (--health == 0)
         {
             Kill(hitDirection);
+            return;
         }
+
+        // Update health UI
+        healthText.text = "HP " + health;
 
         // Play hit sound
         snd.PlayAudioClip("Grunt");
