@@ -154,6 +154,8 @@ public class Enemy : Character
         // Plays death animation
         base.Kill(hitDirection);
 
+        snd.PlayAudioClip("Death");
+
         // Moved to Character 
         /*// Ugly hack for time's sake
         // Push down corpse so it doesn't float on the air

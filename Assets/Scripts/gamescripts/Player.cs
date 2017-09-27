@@ -263,6 +263,8 @@ public class Player : Character
     public override void Kill(int hitDirection)
     {
         base.Kill(hitDirection);
+
+        snd.PlayAudioClip("PlayerDeath");
         game.PlayerGameOver();
     }
 }
