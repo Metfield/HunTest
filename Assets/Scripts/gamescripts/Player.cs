@@ -259,4 +259,10 @@ public class Player : Character
             base.OnBeingShot(hitDirection, projectile);
         }
     }
+
+    public override void Kill(int hitDirection)
+    {
+        base.Kill(hitDirection);
+        game.PlayerGameOver();
+    }
 }

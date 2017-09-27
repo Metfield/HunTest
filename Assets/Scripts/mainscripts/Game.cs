@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Game : MonoBehaviour
 {
@@ -31,6 +33,8 @@ public class Game : MonoBehaviour
 
     int gameObjectLength;
 
+    GameObject gameOverMenu;
+
     public void Init(Main inMain)
     {
         main  = inMain;
@@ -43,6 +47,14 @@ public class Game : MonoBehaviour
 
         gameObjects = new List<GeneralObject>();
         gameObjectLength = 0;
+
+        // Get game over menu and subscribe to events
+        gameOverMenu = GameObject.Find("GOMenu");
+        gameOverMenu.transform.Find("Canvas/Retry").gameObject.GetComponent<Button>().onClick.AddListener(Retry);
+        gameOverMenu.transform.Find("Canvas/Quit").gameObject.GetComponent<Button>().onClick.AddListener(Quit);
+
+        // Hide!
+        gameOverMenu.SetActive(false);
 
         enemyObjects = new List<Enemy>();
 
@@ -209,5 +221,30 @@ public class Game : MonoBehaviour
                 i--;
             }
         }
+    }
+
+    void Retry()
+    {
+        // Convenient hard reset
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    void Quit()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit ();
+#endif
+    }
+
+    public void PlayerGameOver()
+    {
+        // Little humour, why not
+        gameStatus = "u n00b m3 1s l33t";
+
+        // Bring up game over menu and turn on cursor
+        gameOverMenu.SetActive(true);
+        Cursor.visible = true;
     }
 }

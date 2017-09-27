@@ -35,7 +35,7 @@ public class Snd : MonoBehaviour
         if (inVer == "Grunt")
             audioSource.PlayOneShot(characterGrunts[Random.Range(0, 7)]);
         else
-            audioSource.PlayOneShot(audioClips[inVer]);
+            audioSource.PlayOneShot(audioClips[inVer], 0.6f);
     }
 
     public void PlayBGM()
