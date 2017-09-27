@@ -267,4 +267,11 @@ public class Player : Character
         snd.PlayAudioClip("PlayerDeath");
         game.PlayerGameOver();
     }
+
+    public void Freeze()
+    {
+        rigidBody.velocity = Vector2.zero;
+        rigidBody.isKinematic = true;
+        boxCollider.enabled = false;
+    }
 }

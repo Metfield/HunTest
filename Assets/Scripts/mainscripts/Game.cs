@@ -32,8 +32,10 @@ public class Game : MonoBehaviour
     List<GeneralObject> gameObjects;
 
     int gameObjectLength;
+    int enemiesInLevel;
 
     GameObject gameOverMenu;
+    Text gameOverMsg;
 
     public void Init(Main inMain)
     {
@@ -52,13 +54,14 @@ public class Game : MonoBehaviour
         gameOverMenu = GameObject.Find("GOMenu");
         gameOverMenu.transform.Find("Canvas/Retry").gameObject.GetComponent<Button>().onClick.AddListener(Retry);
         gameOverMenu.transform.Find("Canvas/Quit").gameObject.GetComponent<Button>().onClick.AddListener(Quit);
+        gameOverMsg = gameOverMenu.transform.Find("Canvas/Message").gameObject.GetComponent<Text>();
 
         // Hide!
         gameOverMenu.SetActive(false);
 
         enemyObjects = new List<Enemy>();
 
-        player = new Player(main, 5);
+        player = new Player(main, 4);
 
         FindEnemiesInScene();
 
@@ -176,6 +179,8 @@ public class Game : MonoBehaviour
         {
             AddLevelEnemy(new Enemy(main, 3, enemyObject));
         }
+
+        enemiesInLevel = enemyObjects.Count;
     }
 
     public void EnemyIsGettingShot(string enemyName, int hitDirection)
@@ -223,6 +228,15 @@ public class Game : MonoBehaviour
         }
     }
 
+    public void EnemyDied()
+    {
+        if (--enemiesInLevel == 0)
+        {
+            PlayerGameOver();
+            gameOverMsg.text = "C0ngr4tz! U 1s pr0";
+        }
+    }
+
     void Retry()
     {
         // Convenient hard reset
@@ -240,6 +254,8 @@ public class Game : MonoBehaviour
 
     public void PlayerGameOver()
     {
+        player.Freeze();
+
         // Little humour, why not
         gameStatus = "u n00b m3 1s l33t";
 

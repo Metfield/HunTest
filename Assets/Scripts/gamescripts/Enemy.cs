@@ -44,7 +44,7 @@ public class Enemy : Character
         // Initialize shooting-related stuff
         shotsPerBurst = 2;
         burstLengthInSecs = 0.8f;
-        burstStep = 0.5f;
+        burstStep = 0.3f;
 
         // Start idle
         animator.SetBool("Walk", false);
@@ -155,6 +155,8 @@ public class Enemy : Character
         base.Kill(hitDirection);
 
         snd.PlayAudioClip("Death");
+
+        game.EnemyDied();
 
         // Moved to Character 
         /*// Ugly hack for time's sake
