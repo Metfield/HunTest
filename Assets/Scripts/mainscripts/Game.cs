@@ -33,7 +33,8 @@ public class Game : MonoBehaviour
 
     int gameObjectLength;
 
-    GameObject gameOverMenu;
+    GameObject gameOverMenu;    
+    EnemySpawner enemySpawner;
 
     public void Init(Main inMain)
     {
@@ -56,6 +57,8 @@ public class Game : MonoBehaviour
         // Hide!
         gameOverMenu.SetActive(false);
 
+        InitEnemySpawner();
+
         enemyObjects = new List<Enemy>();
 
         player = new Player(main, 5);
@@ -77,10 +80,19 @@ public class Game : MonoBehaviour
         snd.PlayBGM();
     }
 
+    void InitEnemySpawner()
+    {
+        GameObject enemySpawnerObject = new GameObject("EnemySpawner");
+        enemySpawner = enemySpawnerObject.AddComponent<EnemySpawner>();
+        enemySpawner.Init(main, 3);
+    }
+
     void Update()
     {
         if (gameStatus==PLAY)
         {
+            GoEnemySpawner();
+
             GoKeys();
 
             GoPlayer();
@@ -89,6 +101,11 @@ public class Game : MonoBehaviour
 
             GoObjects();
         } 
+    }
+
+    void GoEnemySpawner()
+    {
+        enemySpawner.Run();
     }
 
     void GoPlayer()

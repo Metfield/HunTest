@@ -29,14 +29,27 @@ public class Enemy : Character
         Init();
     }
 
+    public Enemy(Main inMain, int health, GameObject go, Vector3 leftBound, Vector3 rightBound) : base(inMain, "Enemy", health, (int)go.transform.position.x, (int)go.transform.position.y, go)
+    {
+        Init(leftBound, rightBound);
+    }
+
+    private void Init(Vector3 leftBound, Vector3 rightBound)
+    {
+        patrolLeftBound = leftBound;
+        patrolRightBound = rightBound;
+
+        Init();
+    }
+
     private void Init()
     {
         direction = 1;        
         patrolVelocity = new Vector3(0, 0, 0);
 
         // Find patrol bounds
-        patrolLeftBound = gameObject.transform.Find("PatrolLeftBound").transform.position;
-        patrolRightBound = gameObject.transform.Find("PatrolRightBound").transform.position;
+        /* patrolLeftBound = gameObject.transform.Find("PatrolLeftBound").transform.position;
+         patrolRightBound = gameObject.transform.Find("PatrolRightBound").transform.position;*/
 
         // Object is kinematic
         rigidBody.isKinematic = true;
@@ -48,6 +61,12 @@ public class Enemy : Character
 
         // Start idle
         animator.SetBool("Walk", false);
+    }
+
+    public void SetPatrolBounds(Vector3 leftBound, Vector3 rightBound)
+    {
+        patrolLeftBound = leftBound;
+        patrolRightBound = rightBound;
     }
 
     public override bool FrameEvent()
